@@ -95,13 +95,13 @@
         <repository>
             <id>tr-deloyment</id>
             <name>Internal Releases</name>
-            <url>http://localhost:8070/repository/tr-release/</url>
+            <url>http://10.49.41.112:8114/repository/tr-release/</url>
         </repository>
 
         <snapshotRepository>
             <id>tr-deloyment</id>
             <name>Internal Releases</name>
-            <url>http://localhost:8070/repository/tr-snapshot/</url>
+            <url>http://10.49.41.112:8114/repository/tr-snapshot/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
