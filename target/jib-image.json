@@ -1,1 +1,1 @@
-{"image":"registry.hub.docker.com/tyran8x/tr-eureka-service","imageId":"sha256:d3691c5fa3712bfe62dc5f346409a2fe94d7d587771037ac7b2a0d74ad57a4bc","imageDigest":"sha256:f4813bf3814deaddf5896d2cd36b7daf7e4862877fedf77d452e44509aa38233","tags":["latest"],"imagePushed":true}
+{"image":"registry.hub.docker.com/tyran8x/tr-eureka-service","imageId":"sha256:17bfc0a4f7aa8a49356003c6507c7849f7edbb8da3d255c69cc5a930e1c8d12c","imageDigest":"sha256:e549d3558eb4c49b70a7bfea1cf2f853df25b8839f97eec4ae50331c0f3f7470","tags":["latest"],"imagePushed":true}
