@@ -1,0 +1,56 @@
+server:
+  port: 8061
+spring:
+  application:
+    name: eureka-service
+  config:
+    import:
+      - "optional:configserver:http://localhost:8888"
+  security:
+    user:
+      name: admin
+      password: DnictPro@123
+  boot:
+    admin:
+      client:
+        enabled: true
+        url: http://localhost:9090
+        instance:
+          service-host-type: IP
+          metadata:
+            username: ${spring.boot.admin.client.username}
+            userpassword: ${spring.boot.admin.client.password}
+        username: admin
+        password: DnictPro@123
+eureka:
+  instance:
+    hostname: localhost
+    leaseRenewalIntervalInSeconds: 5
+    health-check-url-path: /actuator/health
+    metadata-map:
+      startup: ${random.int}
+  server:
+    eviction-interval-timer-in-ms: 1000
+    wait-time-in-ms-when-sync-empty: 0
+  client:
+    registryFetchIntervalSeconds: 5
+    registerWithEureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:8061/eureka/
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+logging:
+  level:
+    vn.tr: @logging.level@
+    org.springframework: warn
+  config: classpath:logback.xml
