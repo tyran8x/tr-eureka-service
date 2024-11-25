@@ -93,15 +93,15 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>tr-deloyment</id>
+            <id>nexus</id>
             <name>Internal Releases</name>
-            <url>http://10.49.41.112:8114/repository/tr-release/</url>
+            <url>http://nexus.dev.dnict.vn/repository/tr-release/</url>
         </repository>
 
         <snapshotRepository>
-            <id>tr-deloyment</id>
+            <id>nexus</id>
             <name>Internal Releases</name>
-            <url>http://10.49.41.112:8114/repository/tr-snapshot/</url>
+            <url>http://nexus.dev.dnict.vn/repository/tr-snapshot/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
