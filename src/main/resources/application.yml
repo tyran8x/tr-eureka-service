@@ -2,7 +2,7 @@ server:
   port: 8061
 spring:
   application:
-    name: eureka-service
+    name: tr-eureka-service
   config:
     import:
       - "optional:configserver:http://localhost:8888"
