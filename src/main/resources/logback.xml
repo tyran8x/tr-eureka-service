@@ -1,108 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
-    <property name="log.path" value="/opt/logs"/>
-    <property name="console.log.pattern"
-              value="%red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}%n) - %msg%n"/>
-    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"/>
+    <springProperty scope="context" name="springAppName" source="spring.application.name" defaultValue="app"/>
+    <springProperty scope="context" name="logPath" source="LOG_PATH" defaultValue="/opt/logs"/>
+
+    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
 
     <!-- Console output -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>${console.log.pattern}</pattern>
-            <charset>utf-8</charset>
-        </encoder>
-    </appender>
-
-    <!-- Console output -->
-    <appender name="file_console" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.path}/${springAppName}/sys-console.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Log file name format -->
-            <fileNamePattern>${log.path}/${springAppName}/sys-console.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- Maximum log size 1 day -->
-            <maxHistory>1</maxHistory>
-        </rollingPolicy>
-        <encoder>
             <pattern>${log.pattern}</pattern>
             <charset>utf-8</charset>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <!-- Level of filtering -->
-            <level>INFO</level>
-        </filter>
     </appender>
 
-    <!-- System log output -->
+    <!-- File output for INFO -->
     <appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.path}/${springAppName}/sys-info.log</file>
-        <!-- Cycle policy: create log files based on time -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Log file name format -->
-            <fileNamePattern>${log.path}/${springAppName}/sys-info.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- The maximum log history is 60 days -->
+        <file>${logPath}/${springAppName}/sys-info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/${springAppName}/sys-info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
             <maxHistory>60</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>${log.pattern}</pattern>
+            <charset>utf-8</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <!-- Level of filtering -->
             <level>INFO</level>
-            <!-- Operation when matching: receive (record) -->
             <onMatch>ACCEPT</onMatch>
-            <!-- Action when there is no match: reject (do not record) -->
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
 
+    <!-- File output for ERROR -->
     <appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.path}/${springAppName}/sys-error.log</file>
-        <!-- Cycle policy: create log files based on time -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Log file name format -->
-            <fileNamePattern>${log.path}/${springAppName}/sys-error.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- The maximum log history is 60 days -->
+        <file>${logPath}/${springAppName}/sys-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/${springAppName}/sys-error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
             <maxHistory>60</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>${log.pattern}</pattern>
+            <charset>utf-8</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <!-- Level of filtering -->
             <level>ERROR</level>
-            <!-- Operation when matching: receive (record) -->
             <onMatch>ACCEPT</onMatch>
-            <!-- Action when there is no match: reject (do not record) -->
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
 
-    <!-- info -->
+    <!-- Async appender for INFO -->
     <appender name="async_info" class="ch.qos.logback.classic.AsyncAppender">
-        <!-- Do not lose logs. By default, if the queue is 80% full, TRACT, DEBUG and INFO level logs will be discarded. -->
         <discardingThreshold>0</discardingThreshold>
-        <!-- Change the default queue depth, which will affect performance. The default value is 256. -->
         <queueSize>512</queueSize>
-        <!-- Add additional appenders, only one can be added at most -->
+        <includeCallerData>false</includeCallerData>
         <appender-ref ref="file_info"/>
     </appender>
 
-    <!-- error -->
+    <!-- Async appender for ERROR -->
     <appender name="async_error" class="ch.qos.logback.classic.AsyncAppender">
-        <!-- Do not lose logs. By default, if the queue is 80% full, TRACT, DEBUG and INFO level logs will be discarded. -->
         <discardingThreshold>0</discardingThreshold>
-        <!-- Change the default queue depth, which will affect performance. The default value is 256. -->
         <queueSize>512</queueSize>
-        <!-- Add additional appenders, only one can be added at most -->
+        <includeCallerData>false</includeCallerData>
         <appender-ref ref="file_error"/>
     </appender>
 
-    <root level="info">
+    <!-- Root logger -->
+    <root level="INFO">
         <appender-ref ref="console"/>
         <appender-ref ref="async_info"/>
         <appender-ref ref="async_error"/>
-        <appender-ref ref="file_console"/>
     </root>
-
 </configuration>

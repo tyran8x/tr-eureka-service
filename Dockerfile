@@ -1,27 +1,31 @@
-# Stage 1: Build Stage
-FROM maven:3.9.8-eclipse-temurin-21-alpine AS build
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS builder
+
 WORKDIR /app
-COPY pom.xml .
 COPY settings.xml .
-RUN mvn -s settings.xml dependency:go-offline
+COPY pom.xml .
+RUN mvn -B -s settings.xml dependency:go-offline
 COPY src ./src
-RUN mvn -s settings.xml clean package -DskipTests
+RUN mvn -B -s settings.xml package -DskipTests \
+ && java -Djarmode=layertools -jar target/*.jar extract --destination target/extracted
 
-# Stage 2: Create minimal Java runtime with JLink
-FROM eclipse-temurin:21-jdk-alpine AS jlink
-RUN $JAVA_HOME/bin/jlink \
-    --module-path $JAVA_HOME/jmods \
-    --add-modules java.base,java.logging,java.xml,java.naming,java.sql,java.management,java.instrument,jdk.unsupported,java.desktop,java.security.jgss \
-    --output /javaruntime \
-    --compress=2 --no-header-files --no-man-pages
+# -------- RUNTIME --------
+FROM eclipse-temurin:21-jre-alpine
+ENV APP_HOME=/app
+WORKDIR $APP_HOME
 
-# Stage 3: Final Stage
-FROM alpine:latest AS final
-WORKDIR /app
-COPY --from=jlink /javaruntime /opt/java-minimal
-ENV PATH="/opt/java-minimal/bin:$PATH"
-COPY --from=build /app/target/*.jar tr-eureka-service.jar
+# Tạo user non-root có home (tránh lỗi ghi file tạm, tốt cho Spring)
+RUN adduser -D -h /home/appuser -s /bin/sh appuser
+
+# Tạo thư mục log theo chuẩn, cấp quyền cho appuser (rất quan trọng!)
+RUN mkdir -p /opt/logs && chown -R appuser:appuser /opt/logs $APP_HOME
+
+# Copy layers Spring Boot
+COPY --from=builder --chown=appuser:appuser /app/target/extracted/dependencies/ ./
+COPY --from=builder --chown=appuser:appuser /app/target/extracted/spring-boot-loader/ ./
+COPY --from=builder --chown=appuser:appuser /app/target/extracted/snapshot-dependencies/ ./
+COPY --from=builder --chown=appuser:appuser /app/target/extracted/application/ ./
 
 EXPOSE 8061
-ENTRYPOINT ["java", "-jar", "tr-eureka-service.jar"]
+USER appuser
 
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]

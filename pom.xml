@@ -32,9 +32,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
         <dependency>
@@ -42,6 +48,10 @@
             <artifactId>spring-boot-admin-starter-client</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
 
     </dependencies>
 
@@ -55,53 +65,7 @@
                     <mainClass>vn.tr.eureka.EurekaServiceApplication</mainClass>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            <!--            <plugin>-->
-            <!--                <groupId>com.google.cloud.tools</groupId>-->
-            <!--                <artifactId>jib-maven-plugin</artifactId>-->
-            <!--                <version>3.4.3</version>-->
-            <!--                <configuration>-->
-            <!--                    <from>-->
-            <!--                        <image>eclipse-temurin:21-jdk</image>-->
-            <!--                    </from>-->
-            <!--                    <to>-->
-            <!--                        <image>registry.hub.docker.com/tyran8x/${project.artifactId}</image>-->
-            <!--                        <auth>-->
-            <!--                            <username>tyran8x</username>-->
-            <!--                            <password>dckr_pat_c-uf3On2TPHVgZFk9gPVaS67Kzs</password>-->
-            <!--                        </auth>-->
-            <!--                    </to>-->
-            <!--                </configuration>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <phase>package</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>build</goal>-->
-            <!--                        </goals>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
         </plugins>
     </build>
-    <distributionManagement>
-        <repository>
-            <id>nexus</id>
-            <name>Internal Releases</name>
-            <url>http://nexus.dev.dnict.vn/repository/tr-release/</url>
-        </repository>
 
-        <snapshotRepository>
-            <id>nexus</id>
-            <name>Internal Releases</name>
-            <url>http://nexus.dev.dnict.vn/repository/tr-snapshot/</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>

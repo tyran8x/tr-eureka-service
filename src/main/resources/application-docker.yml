@@ -1,0 +1,17 @@
+spring:
+  config:
+    import:
+      - "optional:configserver:http://mcdt-config:8888" # Dockerized Config Server
+  cloud:
+    config:
+      uri: http://mcdt-config:8888
+      username: ${CONFIG_SERVER_USERNAME:-huydq}
+      password: ${CONFIG_SERVER_PASSWORD:-abc@123}
+  boot:
+    admin:
+      client:
+        url: http://mcdt-monitor:8080 # Dockerized Admin server
+
+eureka:
+  instance:
+    hostname: mcdt-eureka # Docker service name
