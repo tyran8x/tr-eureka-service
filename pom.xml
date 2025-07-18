@@ -12,7 +12,7 @@
 
     <artifactId>tr-eureka-service</artifactId>
     <packaging>jar</packaging>
-    <name>Eureka Service</name>
+    <name>tr-eureka-service</name>
     <description>Eureka service</description>
 
     <dependencies>
