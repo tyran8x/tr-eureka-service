@@ -1,3 +1,0 @@
-eureka:
-  instance:
-    hostname: ${EUREKA_INSTANCE_HOSTNAME:mcdt-eureka}

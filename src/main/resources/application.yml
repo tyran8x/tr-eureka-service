@@ -1,86 +1,33 @@
-# --- Server Configuration ---
 server:
-  port: ${SERVER_PORT:8061} # Ưu tiên biến môi trường SERVER_PORT, mặc định 8061
-
-# --- Spring Application Identification ---
+  port: 8061
 spring:
   application:
-    name: tr-eureka-service # Tên định danh cho Eureka Server
+    name: tr-eureka-service
 
-  # --- Security for Eureka Dashboard (Basic Auth) ---
-  security:
-    user:
-      # Ưu tiên biến môi trường EUREKA_DASHBOARD_USER
-      name: ${EUREKA_DASHBOARD_USER:admin}
-      # Ưu tiên biến môi trường EUREKA_DASHBOARD_PASSWORD. ***KHÔNG CÓ GIÁ TRỊ MẶC ĐỊNH***
-      password: ${EUREKA_DASHBOARD_PASSWORD}
-  config:
-    import: "optional:configserver:${SPRING_CONFIG_IMPORT_URI:http://localhost:8888}"
-  cloud:
-    config:
-      username: ${SPRING_CLOUD_CONFIG_USERNAME:huydq}
-      password: ${SPRING_CLOUD_CONFIG_PASSWORD}
-      fail-fast: ${SPRING_CLOUD_CONFIG_FAIL_FAST:false}
-      retry:
-        max-attempts: ${SPRING_CLOUD_CONFIG_RETRY_MAX_ATTEMPTS:6}
-        initial-interval: ${SPRING_CLOUD_CONFIG_RETRY_INITIAL_INTERVAL:1000}
-        max-interval: ${SPRING_CLOUD_CONFIG_RETRY_MAX_INTERVAL:2000}
-        multiplier: ${SPRING_CLOUD_CONFIG_RETRY_MULTIPLIER:1.1}
-  boot:
-    admin:
-      client:
-        url: ${SPRING_BOOT_ADMIN_CLIENT_URL:http://localhost:9090}
-# --- Eureka Server Configuration ---
 eureka:
   instance:
-    # hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost} # Xóa dòng này để Eureka tự xác định, hoặc dùng biến môi trường nếu cần kiểm soát chặt
-    lease-renewal-interval-in-seconds: ${EUREKA_INSTANCE_LEASE_RENEWAL_INTERVAL:30} # Tăng lên giá trị hợp lý (default 30)
-    health-check-url-path: /actuator/health # Dùng actuator health endpoint
-    status-page-url-path: /actuator/info   # Dùng actuator info endpoint
-    metadata-map:
-      startup: ${random.int} # Đảm bảo metadata thay đổi khi khởi động
-
-  server:
-    # Tần suất quét để loại bỏ các instance không gửi heartbeat (ms)
-    eviction-interval-timer-in-ms: ${EUREKA_SERVER_EVICTION_INTERVAL:60000} # Tăng lên giá trị hợp lý (default 60000)
-    # Thời gian chờ trước khi đồng bộ registry rỗng từ peer (ms). Vì là standalone, 0 là chấp nhận được.
-    wait-time-in-ms-when-sync-empty: ${EUREKA_SERVER_WAIT_TIME_SYNC_EMPTY:0}
-    # Xem xét bật self-preservation trong production nếu cần thiết:
-    # enable-self-preservation: true
-
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
   client:
-    # Tần suất Eureka Server (với vai trò client) fetch registry từ peer hoặc chính nó (seconds)
-    registry-fetch-interval-seconds: ${EUREKA_CLIENT_FETCH_INTERVAL:30} # Tăng lên giá trị hợp lý (default 30)
-    # Cấu hình cho standalone Eureka Server (không đăng ký và không fetch từ server khác)
     register-with-eureka: false
     fetch-registry: false
-    # serviceUrl: # Không cần thiết cho standalone server
-    #   defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    service-url:
+      defaultZone: http://localhost:8061/eureka/
+  server:
+    enable-self-preservation: false
 
-# --- Actuator Endpoints Configuration ---
 management:
   endpoints:
     web:
       exposure:
-        # !!! QUAN TRỌNG: Chỉ expose các endpoint cần thiết, không dùng '*' !!!
-        include: health, info, metrics # Các endpoint thường dùng để giám sát Eureka
-        # exclude: env, configprops, loggers, heapdump, threaddump # Loại trừ các endpoint nhạy cảm
+        include: health, info, metrics
   endpoint:
     health:
-      # Hiển thị chi tiết health khi được ủy quyền (nên kết hợp security cho actuator)
-      show-details: when_authorized # An toàn hơn 'always'
+      show-details: when_authorized
 
-# --- Logging Configuration ---
 logging:
   level:
-    # Ưu tiên biến môi trường LOGGING_LEVEL_VN_TR, mặc định INFO
     vn.tr: ${LOGGING_LEVEL_VN_TR:INFO}
-    org.springframework: ${LOGGING_LEVEL_SPRINGFRAMEWORK:WARN} # Giảm log của Spring
-    com.netflix.discovery: ${LOGGING_LEVEL_EUREKA_DISCOVERY:WARN} # Giảm log của Eureka Discovery Client
-    com.netflix.eureka: ${LOGGING_LEVEL_EUREKA_CORE:WARN} # Giảm log của Eureka Core Server
-  config: classpath:logback.xml # Sử dụng file logback tùy chỉnh
-
-  # --- Cấu hình để Spring Boot Admin đọc log file (NẾU DÙNG /actuator/logfile) ---
-  # file:
-  #   # Đường dẫn này PHẢI KHỚP với cấu hình trong logback.xml nếu bạn muốn dùng /actuator/logfile
-  #   name: ${LOG_PATH:/opt/logs}/${spring.application.name:tr-eureka-service}/sys-info.log
+    org.springframework: ${LOGGING_LEVEL_SPRINGFRAMEWORK:WARN}
+  config: classpath:logback.xml
+  file:
+    name: ${LOG_PATH:/opt/logs}/${spring.application.name:tr-eureka-service}/sys-info.log
