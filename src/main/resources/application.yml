@@ -28,6 +28,6 @@ logging:
   level:
     vn.tr: ${LOGGING_LEVEL_VN_TR:INFO}
     org.springframework: ${LOGGING_LEVEL_SPRINGFRAMEWORK:WARN}
-  config: classpath:logback.xml
+  config: classpath:logback-spring.xml
   file:
     name: ${LOG_PATH:/opt/logs}/${spring.application.name:tr-eureka-service}/sys-info.log

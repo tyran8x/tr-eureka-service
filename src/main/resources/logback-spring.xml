@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    ================================================================
+    LOGBACK CONFIGURATION FILE (SPRING BOOT)
+    ================================================================
+    - Filename must be 'logback-spring.xml' to integrate with Spring Boot.
+    - This configuration provides a powerful, unified logging setup.
+    - WARNING: Includes source code location (%C, %M, %L) which impacts
+      performance. Evaluate carefully before using in high-throughput
+      production environments.
+    ================================================================
+-->
+<configuration>
+    <!-- Prints Logback internal status messages to the console for easier debugging of this file -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+
+    <!-- ====================================================== -->
+    <!--          PROPERTY DEFINITIONS                          -->
+    <!-- ====================================================== -->
+
+    <!-- Properties loaded from Spring Boot's application.properties/yml -->
+    <springProperty scope="context" name="springAppName" source="spring.application.name" defaultValue="application"/>
+    <springProperty scope="context" name="logPath" source="logging.file.path" defaultValue="logs"/>
+    <springProperty scope="context" name="PID" source="PID" defaultValue="????-PID-NOT-FOUND"/>
+
+    <!--
+      UNIFIED LOG PATTERN
+      - %clr(...){color}: Provides color coding for the console. Ignored for files.
+      - %d{...}: Full timestamp.
+      - %5p: Log level (INFO, ERROR, etc).
+      - ${PID}: Process ID.
+      - %t: Thread name.
+      - %logger{39}: Logger name (usually the class name), abbreviated.
+      - %C{1}.%M:%L: Source code location (Class.Method:Line). PERFORMANCE-INTENSIVE!
+      - %X{...}: MDC data, used for tracing (e.g., traceId, spanId).
+      - %m%n%ex: The log message, a newline, and the exception stack trace.
+    -->
+    <property name="UNIFIED_LOG_PATTERN"
+              value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(%-38.38C{1}.%M:%L){blue} %clr(|){faint} %X{traceId:-},%X{spanId:-} %clr(:){faint} %m%n%ex"/>
+
+    <!-- ====================================================== -->
+    <!--                 APPENDER DEFINITIONS                   -->
+    <!-- ====================================================== -->
+
+    <!-- 1. Console Appender (for human-readable text logs) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${UNIFIED_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 2. JSON Console Appender (for log aggregation systems like ELK/Graylog) -->
+    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
+    <!-- 3. Rolling File Appender for INFO/WARN logs -->
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/${springAppName}/info.log</file>
+        <encoder>
+            <pattern>${UNIFIED_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/${springAppName}/info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 4. Rolling File Appender for ERROR logs -->
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/${springAppName}/error.log</file>
+        <encoder>
+            <pattern>${UNIFIED_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/${springAppName}/error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <!-- 5. Asynchronous Appenders (to improve application performance) -->
+    <appender name="ASYNC_FILE_INFO" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE_INFO"/>
+        <queueSize>1024</queueSize>
+        <discardingThreshold>20</discardingThreshold>
+        <includeCallerData>true</includeCallerData> <!-- REQUIRED for source code location (%C, %M, %L) -->
+    </appender>
+    <appender name="ASYNC_FILE_ERROR" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE_ERROR"/>
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold> <!-- BEST PRACTICE: Never drop error logs -->
+        <includeCallerData>true</includeCallerData> <!-- REQUIRED for source code location (%C, %M, %L) -->
+    </appender>
+
+    <!-- ====================================================== -->
+    <!--             LOGGERS & ROOT CONFIGURATION               -->
+    <!-- ====================================================== -->
+
+    <!-- Property to group file appenders for DRY principle -->
+    <property name="FILE_APPENDERS" value="ASYNC_FILE_INFO, ASYNC_FILE_ERROR" />
+
+    <!-- Configuration for Development environments -->
+    <springProfile name="local, dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="${FILE_APPENDERS}"/>
+        </root>
+    </springProfile>
+
+    <!-- Configuration for Production-like environments -->
+    <springProfile name="prod, staging, uat">
+        <root level="INFO">
+            <!-- Use JSON for machine-readable output in production -->
+            <appender-ref ref="JSON_CONSOLE"/>
+            <appender-ref ref="${FILE_APPENDERS}"/>
+        </root>
+    </springProfile>
+
+    <!-- Control verbosity of common libraries to reduce noise -->
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="com.zaxxer.hikari" level="WARN"/>
+    <logger name="org.apache.kafka" level="WARN"/>
+    <logger name="org.mongodb.driver" level="WARN"/>
+
+</configuration>

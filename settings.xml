@@ -13,87 +13,87 @@
     </mirrors>
     -->
 
-    <profiles>
-        <profile>
-            <id>nexus-profile</id> <!-- Renamed for clarity -->
-            <repositories>
-                <!-- Define Nexus as the primary repository -->
-                <repository>
-                    <id>nexus-repo</id> <!-- Match server ID for authentication -->
-                    <name>DNICT Nexus Public Repository</name>
-                    <url>https://apps.dnict.vn/nexus/repository/tr-public/</url>
-                    <releases>
-                        <enabled>true</enabled>
-                        <!-- (Optional) Check for updates less frequently for releases -->
-                        <!-- <updatePolicy>daily</updatePolicy> -->
-                    </releases>
-                    <snapshots>
-                        <enabled>true</enabled> <!-- Enable if you use SNAPSHOT dependencies from Nexus -->
-                        <!-- Snapshots should check for updates more often -->
-                        <updatePolicy>always</updatePolicy>
-                        <!-- Or <updatePolicy>interval:60</updatePolicy> for every 60 mins -->
-                    </snapshots>
-                </repository>
-                <!-- (Optional) You might still want Maven Central as a fallback,
-                     but Nexus group repo usually includes it. Remove if tr-public is a group repo. -->
-                <repository>
-                    <id>central</id>
-                    <name>Maven Central</name>
-                    <url>https://repo.maven.apache.org/maven2</url>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
+    <!--    <profiles>-->
+    <!--        <profile>-->
+    <!--            <id>nexus-profile</id> &lt;!&ndash; Renamed for clarity &ndash;&gt;-->
+    <!--            <repositories>-->
+    <!--                &lt;!&ndash; Define Nexus as the primary repository &ndash;&gt;-->
+    <!--                <repository>-->
+    <!--                    <id>nexus-repo</id> &lt;!&ndash; Match server ID for authentication &ndash;&gt;-->
+    <!--                    <name>DNICT Nexus Public Repository</name>-->
+    <!--                    <url>https://apps.dnict.vn/nexus/repository/tr-public/</url>-->
+    <!--                    <releases>-->
+    <!--                        <enabled>true</enabled>-->
+    <!--                        &lt;!&ndash; (Optional) Check for updates less frequently for releases &ndash;&gt;-->
+    <!--                        &lt;!&ndash; <updatePolicy>daily</updatePolicy> &ndash;&gt;-->
+    <!--                    </releases>-->
+    <!--                    <snapshots>-->
+    <!--                        <enabled>true</enabled> &lt;!&ndash; Enable if you use SNAPSHOT dependencies from Nexus &ndash;&gt;-->
+    <!--                        &lt;!&ndash; Snapshots should check for updates more often &ndash;&gt;-->
+    <!--                        <updatePolicy>always</updatePolicy>-->
+    <!--                        &lt;!&ndash; Or <updatePolicy>interval:60</updatePolicy> for every 60 mins &ndash;&gt;-->
+    <!--                    </snapshots>-->
+    <!--                </repository>-->
+    <!--                &lt;!&ndash; (Optional) You might still want Maven Central as a fallback,-->
+    <!--                     but Nexus group repo usually includes it. Remove if tr-public is a group repo. &ndash;&gt;-->
+    <!--                <repository>-->
+    <!--                    <id>central</id>-->
+    <!--                    <name>Maven Central</name>-->
+    <!--                    <url>https://repo.maven.apache.org/maven2</url>-->
+    <!--                    <releases>-->
+    <!--                        <enabled>true</enabled>-->
+    <!--                    </releases>-->
+    <!--                    <snapshots>-->
+    <!--                        <enabled>false</enabled>-->
+    <!--                    </snapshots>-->
+    <!--                </repository>-->
 
-            </repositories>
-            <pluginRepositories>
-                <!-- Define Nexus for plugins as well -->
-                <pluginRepository>
-                    <id>nexus-repo</id> <!-- Match server ID -->
-                    <name>DNICT Nexus Public Repository for Plugins</name>
-                    <url>https://apps.dnict.vn/nexus/repository/tr-public/</url>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>true</enabled> <!-- Enable if you use SNAPSHOT plugins -->
-                        <updatePolicy>always</updatePolicy>
-                    </snapshots>
-                </pluginRepository>
-                <!-- (Optional) Fallback for plugins -->
+    <!--            </repositories>-->
+    <!--            <pluginRepositories>-->
+    <!--                &lt;!&ndash; Define Nexus for plugins as well &ndash;&gt;-->
+    <!--                <pluginRepository>-->
+    <!--                    <id>nexus-repo</id> &lt;!&ndash; Match server ID &ndash;&gt;-->
+    <!--                    <name>DNICT Nexus Public Repository for Plugins</name>-->
+    <!--                    <url>https://apps.dnict.vn/nexus/repository/tr-public/</url>-->
+    <!--                    <releases>-->
+    <!--                        <enabled>true</enabled>-->
+    <!--                    </releases>-->
+    <!--                    <snapshots>-->
+    <!--                        <enabled>true</enabled> &lt;!&ndash; Enable if you use SNAPSHOT plugins &ndash;&gt;-->
+    <!--                        <updatePolicy>always</updatePolicy>-->
+    <!--                    </snapshots>-->
+    <!--                </pluginRepository>-->
+    <!--                &lt;!&ndash; (Optional) Fallback for plugins &ndash;&gt;-->
 
-                <pluginRepository>
-                    <id>central-plugins</id>
-                    <name>Maven Central Plugins</name>
-                    <url>https://repo.maven.apache.org/maven2</url>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </pluginRepository>
+    <!--                <pluginRepository>-->
+    <!--                    <id>central-plugins</id>-->
+    <!--                    <name>Maven Central Plugins</name>-->
+    <!--                    <url>https://repo.maven.apache.org/maven2</url>-->
+    <!--                    <releases>-->
+    <!--                        <enabled>true</enabled>-->
+    <!--                    </releases>-->
+    <!--                    <snapshots>-->
+    <!--                        <enabled>false</enabled>-->
+    <!--                    </snapshots>-->
+    <!--                </pluginRepository>-->
 
-            </pluginRepositories>
-        </profile>
-    </profiles>
+    <!--            </pluginRepositories>-->
+    <!--        </profile>-->
+    <!--    </profiles>-->
 
-    <activeProfiles>
-        <!-- Activate the profile containing Nexus repository definition -->
-        <activeProfile>nexus-profile</activeProfile>
-    </activeProfiles>
+    <!--    <activeProfiles>-->
+    <!--        &lt;!&ndash; Activate the profile containing Nexus repository definition &ndash;&gt;-->
+    <!--        <activeProfile>nexus-profile</activeProfile>-->
+    <!--    </activeProfiles>-->
 
-    <servers>
-        <!-- Credentials for deploying/accessing secured repositories in Nexus -->
-        <!-- The ID here MUST match the repository/pluginRepository ID defined in the profile -->
-        <server>
-            <id>nexus-repo</id> <!-- Changed ID to match repository ID -->
-            <username>tr-deloyment</username>
-            <password>DnictPro@123</password>
-        </server>
-        <!-- Add other server credentials if needed -->
-    </servers>
+    <!--    <servers>-->
+    <!--        &lt;!&ndash; Credentials for deploying/accessing secured repositories in Nexus &ndash;&gt;-->
+    <!--        &lt;!&ndash; The ID here MUST match the repository/pluginRepository ID defined in the profile &ndash;&gt;-->
+    <!--        <server>-->
+    <!--            <id>nexus-repo</id> &lt;!&ndash; Changed ID to match repository ID &ndash;&gt;-->
+    <!--            <username>tr-deloyment</username>-->
+    <!--            <password>DnictPro@123</password>-->
+    <!--        </server>-->
+    <!--        &lt;!&ndash; Add other server credentials if needed &ndash;&gt;-->
+    <!--    </servers>-->
 </settings>
