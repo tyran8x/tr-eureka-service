@@ -21,17 +21,31 @@ FROM eclipse-temurin:21-jre-alpine
 
 ENV APP_HOME=/app \
     TZ=Asia/Ho_Chi_Minh
+
 WORKDIR $APP_HOME
 
-RUN adduser -D -h /home/appuser -s /bin/sh appuser
-RUN mkdir -p /opt/logs && chown -R appuser:appuser /opt/logs $APP_HOME
-RUN apk update && apk add --no-cache curl
+# Tạo user, cài đặt các gói cần thiết và tạo thư mục trong MỘT LỆNH RUN DUY NHẤT
+# Điều này giảm số lượng layer, làm cho image nhỏ hơn và build nhanh hơn.
+RUN adduser -D -h ${APP_HOME} -s /bin/sh appuser && \
+    apk update && apk add --no-cache curl && \
+    mkdir -p /opt/logs && \
+    chown -R appuser:appuser ${APP_HOME} /opt/logs
 
 COPY --from=builder --chown=appuser:appuser /app/target/extracted/dependencies/ ./
 COPY --from=builder --chown=appuser:appuser /app/target/extracted/spring-boot-loader/ ./
 COPY --from=builder --chown=appuser:appuser /app/target/extracted/snapshot-dependencies/ ./
 COPY --from=builder --chown=appuser:appuser /app/target/extracted/application/ ./
 
+# Mở port cho ứng dụng
 EXPOSE 8061
+
+# Thêm Health Check để Docker/Kubernetes biết ứng dụng có thực sự khỏe mạnh không
+# Yêu cầu phải có Spring Boot Actuator và endpoint /actuator/health
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD curl -f http://localhost:8061/actuator/health || exit 1
+
+# Chuyển sang user không phải root
 USER appuser
+
+# Lệnh khởi động ứng dụng
 ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
