@@ -1,0 +1,9 @@
+*.class
+.idea
+target
+**/target/
+*.flattened-pom.xml
+*.iml
+logs
+splitted-repos/
+split_services.ps1
